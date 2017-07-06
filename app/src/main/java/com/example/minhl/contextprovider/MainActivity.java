@@ -22,7 +22,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends RuntimePermissionsActivity {
+import static android.Manifest.permission.*;
+
+public class MainActivity extends AppCompatActivity {
     private final static String DISPLAY_NAME = ContactsContract.Contacts.DISPLAY_NAME;
     private final static Uri URI_CONTENT = ContactsContract.Contacts.CONTENT_URI;
     private final static String _ID = ContactsContract.Contacts._ID;
@@ -42,7 +44,25 @@ public class MainActivity extends RuntimePermissionsActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initALotOfThings();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int permissionCheck = PackageManager.PERMISSION_GRANTED;
+        for (int permission : grantResults) {
+            permissionCheck = permissionCheck + permission;
+        }
+        if ((grantResults.length > 0) && permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            onPermissionsGranted(requestCode);
+        } else {
+            Toast.makeText(this, "Ko cấp quyền sao chạy dc :(", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    private void onPermissionsGranted(int requestCode) {
+        Toast.makeText(this, "Ahihi đồ ngốc", Toast.LENGTH_SHORT).show();
     }
 
     public void getContact() {
@@ -84,9 +104,7 @@ public class MainActivity extends RuntimePermissionsActivity {
         btnShowContact = (Button) findViewById(R.id.btn_show_contact);
         lvContact = (ListView) findViewById(R.id.lv);
         listContact = new ArrayList<>();
-        MainActivity.super.requestAppPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                R.string.runtime_permissions_txt, REQUEST_PERMISSIONS);
-
+        askForPermission();
         btnShowContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,15 +113,17 @@ public class MainActivity extends RuntimePermissionsActivity {
         });
     }
 
+    private void askForPermission() {
+        String[] PERMISSION = {READ_CONTACTS};
+        if (!UtilPermissions.hasPermissions(this,PERMISSION)) {
+            ActivityCompat.requestPermissions(this, PERMISSION, REQUEST_PERMISSIONS);
+        }
+    }
+
     public void setAdapter() {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, listContact);
         lvContact.setAdapter(arrayAdapter);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode) {
-        Toast.makeText(this, "Ahihi đc chấp nhận r, bấm Button đi", Toast.LENGTH_SHORT).show();
     }
 
     public boolean isAvailable(int phoneNumber) {
