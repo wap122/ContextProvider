@@ -79,13 +79,13 @@ public class MainActivity extends AppCompatActivity {
             String contactID = getCussorStringWithColum(cursor, _ID);
             String name = getCussorStringWithColum(cursor, DISPLAY_NAME);
             int hasphoneNumber = Integer.parseInt(getCussorStringWithColum(cursor,
-                            HAS_PHONE_NUMBER));
-                    if (isAvailable(hasphoneNumber)) {
-                        element.append(contactID).append(". First Name: ").append(name);
-                        Cursor phoneCursor = getContentResolver().query(PhoneCONTENT_URI, null,
-                                Phone_CONTACT_ID + " = ?", new String[]{contactID}, null); //vẫn chưa hiểu làm câu lệnh query này
-                        while (phoneCursor.moveToNext()) {
-                            String phoneNumber = getCussorStringWithColum(phoneCursor, NUMBER);
+                    HAS_PHONE_NUMBER));
+            if (isAvailable(hasphoneNumber)) {
+                element.append(contactID).append(". First Name: ").append(name);
+                Cursor phoneCursor = getContentResolver().query(PhoneCONTENT_URI, null,
+                        Phone_CONTACT_ID + " = ?", new String[]{contactID}, null); //vẫn chưa hiểu làm câu lệnh query này
+                while (phoneCursor.moveToNext()) {
+                    String phoneNumber = getCussorStringWithColum(phoneCursor, NUMBER);
                     element.append("\n    Phone number: " + phoneNumber);
                 }
                 phoneCursor.close();
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void askForPermission() {
         String[] PERMISSION = {READ_CONTACTS};
-        if (!UtilPermissions.hasPermissions(this,PERMISSION)) {
+        if (!UtilPermissions.hasPermissions(this, PERMISSION)) {
             ActivityCompat.requestPermissions(this, PERMISSION, REQUEST_PERMISSIONS);
         }
     }
